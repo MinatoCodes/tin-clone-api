@@ -1,28 +1,37 @@
 import express from "express";
-import shortid from "shortid";
+import fetch from "node-fetch";
 
 const app = express();
-const urlMap = {}; // { alias: originalUrl }
 
-app.get("/api/shorten", (req, res) => {
-  const originalUrl = req.query.url;
-  if (!originalUrl) return res.status(400).json({ error: "Missing URL" });
+const TINYURL_API_TOKEN = "FjnI0RLxx2rzWIOlDNbYOgQBMo6FmpBrTDky9KF7AqgT5qqSMsyN9hgzSKtw"; // get from https://tinyurl.com/app/dev
 
-  const alias = shortid.generate();
-  urlMap[alias] = originalUrl;
+app.get("/api/shorten", async (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).json({ error: "Missing URL" });
 
-  res.json({
-    shortUrl: `${req.protocol}://${req.get("host")}/${alias}`,
-    originalUrl
-  });
-});
+  try {
+    const response = await fetch("https://api.tinyurl.com/create", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${TINYURL_API_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ url })
+    });
 
-app.get("/:alias", (req, res) => {
-  const originalUrl = urlMap[req.params.alias];
-  if (!originalUrl) return res.status(404).json({ error: "Not found" });
+    const data = await response.json();
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
 
-  res.redirect(originalUrl);
+    res.json({
+      shortUrl: data.data.tiny_url,
+      originalUrl: url
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to shorten URL" });
+  }
 });
 
 app.listen(3000, () => console.log("API running on http://localhost:3000"));
-        
+      
