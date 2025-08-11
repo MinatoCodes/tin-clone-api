@@ -46,16 +46,4 @@ app.get("/api/shorten", async (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running on http://localhost:3000"));
-    }
-
-    res.json({
-      shortUrl: data.data.tiny_url,
-      originalUrl: longUrl
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.listen(3000, () => console.log("Server running on http://localhost:3000"));
-        
+      
