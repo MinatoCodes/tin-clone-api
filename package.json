@@ -1,5 +1,5 @@
 {
-  "name": "tinyurl-clone",
+  "name": "tinyurl-proxy",
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
@@ -8,6 +8,6 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "shortid": "^2.2.16"
+    "node-fetch": "^3.3.2"
   }
 }
